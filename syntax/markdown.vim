@@ -5,7 +5,7 @@
 " Created By        : Thomas Aurel
 " Creation Date     : January  7th, 2015
 " Version           : 0.1
-" Last Change       : January 27th, 2015 at 09:55:06
+" Last Change       : February  6th, 2015 at 10:42:58
 " Last Changed By   : Thomas Aurel
 "
 if exists("b:current_syntax")
@@ -18,13 +18,14 @@ syntax case ignore
 "   CLUSTER DEFINITION
 " ======================
 " main clusters
-syntax cluster markdownInline contains=@markdownEmphasis,@markdownLink,markdownError,markdownCodeLine,markdownDelimiter,markdownEmail,markdownAccent
+syntax cluster markdownInline contains=@markdownEmphasis,@markdownLink,markdownError,markdownCodeLine,markdownDelimiter,markdownEmail,markdownAccent,@markdownFile
 syntax cluster markdownBlock contains=markdownBlockquote,@markdownList,markdownTitle
 
 " secondary clusters
 syntax cluster markdownEmphasis contains=markdownItalic,markdownStrong,markdownItalicStrong
 syntax cluster markdownList contains=markdownClassicList,markdownOrderedList
 syntax cluster markdownLink contains=markdownLinkTitle,markdownURL
+syntax cluster markdownFile contains=markdownImageLink,markdownFileLink
 
 " =====================
 "   SYNTAX DEFINITION
@@ -65,6 +66,9 @@ syntax match markdownOrderedList "\v^\s*\d+\.\s+.*$" contains=@markdownInline co
 " ---------
 "   Links
 " ---------
+syntax region markdownFileLink start="\[\[\S" end="\S\]\]" contained oneline
+syntax region markdownImageLink start="!\[\S" end="\S\]" contained oneline
+
 syntax region markdownLinkTitle start="\%(\[\)\@<=\S" end="\S\%(\]\)\@=" contained oneline nextgroup=markdownURL
 syntax match markdownURLTitle "\v\"\S.*\S\S\"" contained
 syntax region markdownURL start="\%(\](\)\@<=\S" end="\S\%()$\|)\s\|):\|),\|)\.\)\@=" oneline contained contains=markdownURLTitle
@@ -77,7 +81,7 @@ syntax region markdownURL start="\%(\](\)\@<=\S" end="\S\%()$\|)\s\|):\|),\|)\.\
 syntax match markdownEmail "\%(\s\|^\)\@<=[0-9A-Za-z\._-]+@[0-9A-Za-z\._-]+\%(\s\|$\)\@=" contained
 
 " code
-syntax match markdownCodeLine "\s```\S.*\S```\(\s\|$\|,\|\.\)\@=" contained
+syntax match markdownCodeLine "\s```\S.*\S```\(\s\|$\|,\|\.\|(\)\@=" contained
 syntax region markdownCode start=/\v^```.*/ end=/\v```$/
 syntax region markdownCode start=/\v^\~\~\~.*/ end=/\v\~\~\~$/
 
@@ -97,11 +101,17 @@ syntax match markdownError "\%(\s\)\@<![:;]\%(\s\|$\)\@!" contained
 " ==================
 highlight link markdownTitle MarkdownTitle
 highlight link markdownBlockquote MardownBlockquote
+
 highlight link markdownStrong MarkdownStrong
 highlight link markdownItalic MarkdownItalic
 highlight link markdownItalicStrong MarkdownItalicStrong
+
 highlight link markdownOrderedList MarkdownOrderedList
 highlight link markdownClassicList MarkdownClassicList
+
+highlight link markdownFileLink MarkdownFile
+highlight link markdownImageLink MarkdownFile
+
 highlight link markdownLinkTitle MarkdownLinkTitle
 highlight link markdownURL MarkdownURL
 highlight link markdownURLLine MarkdownURL
