@@ -18,7 +18,7 @@ syntax case ignore
 "   CLUSTER DEFINITION
 " ======================
 " main clusters
-syntax cluster markdownInline contains=@markdownEmphasis,@markdownLink,markdownError,markdownCodeLine,markdownDelimiter,markdownEmail,markdownAccent,@markdownFile
+syntax cluster markdownInline contains=@markdownEmphasis,@markdownLink,@markdownFile,@markdownMisc
 syntax cluster markdownBlock contains=markdownBlockquote,@markdownList,markdownTitle
 
 " secondary clusters
@@ -26,6 +26,7 @@ syntax cluster markdownEmphasis contains=markdownItalic,markdownStrong,markdownI
 syntax cluster markdownList contains=markdownClassicList,markdownOrderedList
 syntax cluster markdownLink contains=markdownLinkTitle,markdownURL
 syntax cluster markdownFile contains=markdownImageLink,markdownFileLink
+syntax cluster markdownMisc contains=markdownNumber,markdownDelimiter,markdownAccent,markdownError,markdownCodeLine,markdownEmail
 
 " =====================
 "   SYNTAX DEFINITION
@@ -87,6 +88,13 @@ syntax region markdownCode start=/\v^\~\~\~.*/ end=/\v\~\~\~$/
 
 syntax match markdownAccent "\v\&[A-Za-Z]+;" contained
 syntax match markdownDelimiter "\v\<br\>" contained
+
+" ===========
+"   Numbers
+" ===========
+syntax match markdownNumber "\v\d+" contained
+syntax match markdownNumber "\v\d+[\.,]\d+" contained
+
 " =========
 "   Error
 " =========
@@ -124,5 +132,7 @@ highlight link markdownCodeLine MarkdownCodeLine
 highlight link markdownAccent MarkdownAccent
 highlight link markdownDelimiter Delimiter
 highlight link markdownError Error
+
+highlight link markdownNumber Number
 
 let b:current_syntax = "markdown"
