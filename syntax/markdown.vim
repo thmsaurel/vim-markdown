@@ -5,7 +5,7 @@
 " Created By        : Thomas Aurel
 " Creation Date     : January  7th, 2015
 " Version           : 0.1
-" Last Change       : February  6th, 2015 at 10:42:58
+" Last Change       : February 16th, 2015 at 14:14:49
 " Last Changed By   : Thomas Aurel
 "
 if exists("b:current_syntax")
@@ -19,14 +19,15 @@ syntax case ignore
 " ======================
 " main clusters
 syntax cluster markdownInline contains=@markdownEmphasis,@markdownLink,@markdownFile,@markdownMisc
-syntax cluster markdownBlock contains=markdownBlockquote,@markdownList,markdownTitle
+syntax cluster markdownBlock contains=markdownBlockquote,@markdownList,markdownTitle,markdownCodeBlock
 
 " secondary clusters
 syntax cluster markdownEmphasis contains=markdownItalic,markdownStrong,markdownItalicStrong
 syntax cluster markdownList contains=markdownClassicList,markdownOrderedList
 syntax cluster markdownLink contains=markdownLinkTitle,markdownURL
 syntax cluster markdownFile contains=markdownImageLink,markdownFileLink
-syntax cluster markdownMisc contains=markdownNumber,markdownDelimiter,markdownAccent,markdownError,markdownCodeLine,markdownEmail
+syntax cluster markdownMisc contains=markdownNumber,markdownDelimiter,markdownAccent,markdownError,markdownCodeLine,markdownEmail,markdownSpecial
+syntax cluster markdownCode contains=markdownCodeBlock,markdownCodeLine
 
 " =====================
 "   SYNTAX DEFINITION
@@ -51,12 +52,9 @@ syntax match markdownBlockquote "\v^\>.*$" contains=@markdownInline,markdownTitl
 " ------------------------
 "   Italic, Strong and Both
 " ------------------------
-syntax region markdownItalic start="\%(\s\|^\|['"]\)\@<=\*\%(\s\|$\)\@!" end="\%(\s\|$\)\@<!\*\%(\s\|\|$\|[,\.<:)'"]\)\@=" contained oneline
-syntax region markdownItalic start="\%(\s\|^\|['"]\)\@<=_\%(\s\|$\)\@!" end="\%(\s\|$\)\@<!_\%(\s\|\|$\|[,\.<:)'"]\)\@=" contained oneline
-syntax region markdownStrong start="\%(\s\|^\|['"]\)\@<=\*\*\%(\s\|$\)\@!" end="\%(\s\|$\)\@<!\*\*\%(\s\|$\|[,\.<:)'"]\)\@=" contained oneline
-syntax region markdownStrong start="\%(\s\|^\|['"]\)\@<=__\%(\s\|$\)\@!" end="\%(\s\|$\)\@<!__\%(\s\|$\|[,\.<:)'"]\)\@=" contained oneline
-syntax region markdownItalicStrong start="\%(\s\|^\|['"]\)\@<=\*\*\*\%(\s\|$\)\@!" end="\%(\s\|$\)\@<!\*\*\*\%(\s\|$\|[,\.<:)'"]\)\@=" contained oneline
-syntax region markdownItalicStrong start="\%(\s\|^\|['"]\)\@<=___\%(\s\|$\)\@!" end="\%(\s\|$\)\@<!___\%(\s\|$\|[,\.<:)'"]\)\@=" contained oneline
+syntax match markdownItalic "\v%(\s|^|['"])@<=(\*[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]+\*|_[0-9A-Za-z\-\*#\$/`\.\(\) \<\>\+=]+_)%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
+syntax match markdownStrong "\v%(\s|^|['"])@<=(\*{2}[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]+\*{2}|_{2}[0-9A-Za-z\-\*#\$/`\.\(\) \<\>\+=]+_{2})%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
+syntax match markdownItalicStrong "\v%(\s|^|['"])@<=(\*{3}[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]+\*{3}|_{3}[0-9A-Za-z\-\*#\$/`\.\(\) \<\>\+=]+_{3})%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
 
 " ---------
 "   Lists
@@ -67,42 +65,58 @@ syntax match markdownOrderedList "\v^\s*\d+\.\s+.*$" contains=@markdownInline co
 " ---------
 "   Links
 " ---------
-syntax region markdownFileLink start="\[\[\S" end="\S\]\]" contained oneline
-syntax region markdownImageLink start="!\[\S" end="\S\]" contained oneline
+syntax region markdownFileLink start="\v\[\[\S" end="\v\S\]\]" contained oneline
+syntax region markdownImageLink start="\v!\[\S" end="\v\S\]" contained oneline
 
-syntax region markdownLinkTitle start="\%(\[\)\@<=\S" end="\S\%(\]\)\@=" contained oneline nextgroup=markdownURL
+syntax region markdownLinkTitle start="\v%(\[)@<=\S" end="\v\S%(\])@=" contained oneline nextgroup=markdownURL
 syntax match markdownURLTitle "\v\"\S.*\S\S\"" contained
-syntax region markdownURL start="\%(\](\)\@<=\S" end="\S\%()$\|)\s\|):\|),\|)\.\)\@=" oneline contained contains=markdownURLTitle
+syntax region markdownURL start="\v%(\]\()@<=\S" end="\v\S%(\)$|\)\s|\):|\),|\)\.)@=" oneline contained contains=markdownURLTitle
 "
 " url match
 " syntax match markdownURLLine "\%(^\|\s\|(\|\[\)\@<=\w+://\w[0-9A-Za-Z\.-]+\w\(/\|\)\%(\s\|$\|)\|\]\)\@=" contained
 " syntax match markdownURLLine "\%(^\|\s\|(\|\[\)\@<=\w[0-9A-Za-Z\.-]+\w\(/\|\)\%(\s\|$\|)\|\]\)\@=" contained
 
 " email address
-syntax match markdownEmail "\%(\s\|^\)\@<=[0-9A-Za-z\._-]+@[0-9A-Za-z\._-]+\%(\s\|$\)\@=" contained
+syntax match markdownEmail "\v%(\s|^)@<=[0-9A-Za-z\._-]+\@[0-9A-Za-z\._-]+%(\s|$)@=" contained
 
 " code
-syntax match markdownCodeLine "\s```\S.*\S```\(\s\|$\|,\|\.\|(\)\@=" contained
-syntax region markdownCode start=/\v^```.*/ end=/\v```$/
-syntax region markdownCode start=/\v^\~\~\~.*/ end=/\v\~\~\~$/
+syntax match markdownCodeLine "\v%(^|\s|\(|/|\*)@<=`{1,3}[0-9A-Za-z-_#\$/\.\(\) \<\>\+=]*`{1,3}%(\s|$|,|\.|/|:|\)|\*)@=" contained
+syntax region markdownCodeBlock start=/\v^[`\~]{3}\w*$/ end=/\v^[`\~]{3}$/
 
-syntax match markdownAccent "\v\&[A-Za-Z]+;" contained
+syntax match markdownAccent "\v&[A-Za-Z]+;" contained
 syntax match markdownDelimiter "\v\<br\>" contained
 
-" ===========
-"   Numbers
-" ===========
+" =================
+"   Miscellaneous
+" =================
+" number
 syntax match markdownNumber "\v\d+" contained
 syntax match markdownNumber "\v\d+[\.,]\d+" contained
+" warning
+syntax match markdownSpecial "\v/!\\" contained
 
 " =========
 "   Error
 " =========
 syntax match markdownError "\v.*\s+$" contained
-syntax match markdownError "\%(\S\)\@<![\.,?!]" contained
-syntax match markdownError "\.\%(\.\|)\|\s\|$\)\@!" contained
+syntax match markdownError "\%(\[\|\s\)\@!\.\{3}\%(\s\|$\|\]\)\@!" contained
+syntax match markdownError "\%(\s\|\w\|\.\|\[\)\@<!\.\%(\.\|\]\|\s\|\$\)<@!" contained
+syntax match markdownError "\s\.\%($\|\s\)" contained
+syntax match markdownError "\%(\S\)\@<![,!]" contained
+syntax match markdownError "\%(\S\|?\|\)\@=!\%($\|?\|\s\)\@<!" contained
 syntax match markdownError ",\%(\s\|$\)\@!" contained
-syntax match markdownError "\%(\s\)\@<![:;]\%(\s\|$\)\@!" contained
+syntax match markdownError "\%(\s\)\@<![:;]\%(\s\|$\|<\)\@!" contained
+syntax match markdownError "\%(\s\)\@<=`\{1,3}\%(\s\|$\)\@=" contained
+syntax match markdownError "`\{4,}" contained
+" emphasis error
+syntax match markdownError "\v%(\s|^|['"])@<!(\*{1}( [0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]*|[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]* )\*{1})%(\s|$|[,\.\<:\(\)'"])@!" contained
+syntax match markdownError "\v%(\s|^|['"])@<!\*{2}( [0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]*|[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]* )\*{2}%(\s|$|[,\.\<:\(\)'"])@!" contained
+syntax match markdownError "\v%(\s|^|['"])@<!\*{3}( [0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]*|[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]* )\*{3}%(\s|$|[,\.\<:\(\)'"])@!" contained
+" code line error
+syntax match markdownError "\v%(^|\s|\(|/|\*)@<=`[0-9A-Za-z-_#\$/\.\(\) \<\>\+=]*`{2,3}%(\s|$|,|\.|/|:|\)|\*)@=" contained
+syntax match markdownError "\v%(^|\s|\(|/|\*)@<=`{2}[0-9A-Za-z-_#\$/\.\(\) \<\>\+=]*(`|`{3})%(\s|$|,|\.|/|:|\)|\*)@=" contained
+syntax match markdownError "\v%(^|\s|\(|/|\*)@<=`{3}[0-9A-Za-z-_#\$/\.\(\) \<\>\+=]*`{1,2}%(\s|$|,|\.|/|:|\)|\*)@=" contained
+syntax match markdownError "\v%(^|\s|\(|/|\*)@<!`{1,3}[0-9A-Za-z-_#\$/\.\(\) \<\>\+=]*`{1,3}%(\s|$|,|\.|/|:|\)|\*)@=" contained
 
 " ==================
 "   Highlight Name
@@ -126,13 +140,14 @@ highlight link markdownURLLine MarkdownURL
 highlight link markdownURLTitle MarkdownURLTitle
 highlight link markdownEmail MarkdownEmail
 
-highlight link markdownCode MarkdownCode
-highlight link markdownCodeLine MarkdownCodeLine
+highlight link markdownCodeBlock MarkdownCode
+highlight link markdownCodeLine MarkdownCode
 
 highlight link markdownAccent MarkdownAccent
 highlight link markdownDelimiter Delimiter
 highlight link markdownError Error
 
 highlight link markdownNumber Number
+highlight link markdownSpecial Special
 
 let b:current_syntax = "markdown"
