@@ -80,7 +80,7 @@ syntax region markdownURL start="\v%(\]\()@<=\S" end="\v\S%(\)$|\)\s|\):|\),|\)\
 syntax match markdownEmail "\v%(\s|^)@<=[0-9A-Za-z\._-]+\@[0-9A-Za-z\._-]+%(\s|$)@=" contained
 
 " code
-syntax match markdownCodeLine "\v%(^|\s|\(|/|\*)@<=`{1,3}[0-9A-Za-z-_~#\$/\.\(\) \<\>\+=]*`{1,3}%(\s|$|,|\.|/|:|\)|\*)@=" contained
+syntax match markdownCodeLine "\v%(^|\s|\(|/|\*)@<=`{1,3}[0-9A-Za-z-_~#\$/\.\*\(\) \<\>\+=]*`{1,3}%(\s|$|,|\.|/|:|\)|\*)@=" contained
 syntax region markdownCodeBlock start=/\v^[`\~]{3}\w*$/ end=/\v^[`\~]{3}$/
 syntax region markdownCodeBlock start=/\v^\>\s[`\~]{3}\w*$/ end=/\v^\>\s[`\~]{3}$/
 
