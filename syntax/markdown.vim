@@ -52,9 +52,9 @@ syntax match markdownBlockquote "\v^\>.*$" contains=@markdownInline,markdownTitl
 " ------------------------
 "   Italic, Strong and Both
 " ------------------------
-syntax match markdownItalic "\v%(\s|^|['"])@<=(\*[0-9A-Za-z\-_#\$/`,\.\(\) \<\>\+=]+\*|_[0-9A-Za-z\-\*#\$/`\.,\(\) \<\>\+=]+_)%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
-syntax match markdownStrong "\v%(\s|^|['"])@<=(\*{2}[0-9A-Za-z\-_#\$/`,\.\(\) \<\>\+=]+\*{2}|_{2}[0-9A-Za-z\-\*#\$/`,\.\(\) \<\>\+=]+_{2})%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
-syntax match markdownItalicStrong "\v%(\s|^|['"])@<=(\*{3}[0-9A-Za-z\-,_#\$/`\.\(\) \<\>\+=]+\*{3}|_{3}[0-9A-Za-z\-\*,#\$/`\.\(\) \<\>\+=]+_{3})%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
+syntax match markdownItalic "\v%(\s|^|['"\(])@<=(\*[0-9A-Za-z\-_#\$/`,\.\(\) \<\>\+=]+\*|_[0-9A-Za-z\-\*#\$/`\.,\(\) \<\>\+=]+_)%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
+syntax match markdownStrong "\v%(\s|^|['"\(])@<=(\*{2}[0-9A-Za-z\-_#\$/`,\.\(\) \<\>\+=]+\*{2}|_{2}[0-9A-Za-z\-\*#\$/`,\.\(\) \<\>\+=]+_{2})%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
+syntax match markdownItalicStrong "\v%(\s|^|['"\(\)])@<=(\*{3}[0-9A-Za-z\-,_#\$/`\.\(\) \<\>\+=]+\*{3}|_{3}[0-9A-Za-z\-\*,#\$/`\.\(\) \<\>\+=]+_{3})%(\s|$|[,\.\<:\(\)'"])@=" contained contains=markdownCodeLine
 
 " ---------
 "   Lists
@@ -80,7 +80,7 @@ syntax region markdownURL start="\v%(\]\()@<=\S" end="\v\S%(\)$|\)\s|\):|\),|\)\
 syntax match markdownEmail "\v%(\s|^)@<=[0-9A-Za-z\._-]+\@[0-9A-Za-z\._-]+%(\s|$)@=" contained
 
 " code
-syntax match markdownCodeLine "\v%(^|\s|\(|/|\*)@<=`{1,3}[0-9A-Za-z-_~#\$/\.\*\(\) \<\>\+=]*`{1,3}%(\s|$|,|\.|/|:|\)|\*)@=" contained
+syntax match markdownCodeLine "\v%(^|\s|\(|/|\*)@<=`{1,3}[0-9A-Za-z-_~#\$\//\.\*\(\) \<\>\+=]*`{1,3}%(\s|$|[,'"]|\.|/|:|\)|\*)@=" contained
 syntax region markdownCodeBlock start=/\v^[`\~]{3}\w*$/ end=/\v^[`\~]{3}$/
 syntax region markdownCodeBlock start=/\v^\>\s[`\~]{3}\w*$/ end=/\v^\>\s[`\~]{3}$/
 
@@ -112,8 +112,8 @@ syntax match markdownError "\v%(^|^\>\s)@<![`\~]{1,3}%($)@=" contained
 syntax match markdownError "\v`{4,}" contained
 
 " emphasis error
-syntax match markdownError "\v%(\s|^|['"])@<![_\*]{1,3}.*[_\*]{1,3}%(\s|$|[,\.\<:\(\)'"])@!" contained
-syntax match markdownError "\v%(\s|^|['"])@<![_\*]{1,3}.*[_\*]{1,3}%(\s|$|[,\.\<:\(\)'"])@!" contained
+syntax match markdownError "\v%(\s|^|['"\(])@<![_\*]{1,3}.*[_\*]{1,3}%(\s|$|[,\.\<:\(\)'"])@!" contained
+syntax match markdownError "\v%(\s|^|['"\(])@<![_\*]{1,3}.*[_\*]{1,3}%(\s|$|[,\.\<:\(\)'"])@!" contained
 
 " syntax match markdownError "\v%(\s|^|['"])@<!\*{1,3}(\s[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]*|[0-9A-Za-z\-_#\$/`\.\(\) \<\>\+=]*\s)\*{1,3}%(\s|$|[,\.\<:\(\)'"])@!" contained
 " code line error
